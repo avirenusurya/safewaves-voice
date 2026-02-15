@@ -1,12 +1,3 @@
----
-title: SafeWaves - AI DeepFake Voice Detection
-colorFrom: blue
-colorTo: indigo
-sdk: gradio
-pinned: false
-license: mit
----
-
 # SafeWaves: AI DeepFake Voice Detection
 
 SafeWaves is an API-first voice authenticity system that detects whether an input voice sample is:
