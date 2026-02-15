@@ -106,7 +106,9 @@ If you use this project or model setup in your work, please cite:
 
 ```bash
 cd /home/a/Documents/A/Hackathon/guvi-model
+python3 -m venv venv
 source venv/bin/activate
+pip install -r requirements.txt
 export MODEL_PATH=./models/DF_Arena
 export PREFERRED_DEVICE=cuda
 export ALLOW_CPU_FALLBACK=0
