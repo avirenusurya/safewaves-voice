@@ -1,0 +1,13 @@
+venv/
+.hf_cache/
+__pycache__/
+*.pyc
+.env
+
+# Local evaluation assets
+Impact AI Hackathon Voice/
+
+# Keep model code/config, ignore large local weights/cache artifacts
+models/**/__pycache__/
+models/**/.cache/
+models/**/pytorch_model.bin
