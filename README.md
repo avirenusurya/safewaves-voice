@@ -1,39 +1,37 @@
-# SafeWaves: AI DeepFake Voice Detection
+<div align="center">
 
-SafeWaves is an API-first voice authenticity system that detects whether an input voice sample is:
+# safewaves-voice
 
-- `AI_GENERATED`
-- `HUMAN`
+**Detect whether a voice clip is AI-generated or human.**
 
-The solution is built for the **India AI Impact Buildathon** voice-detection problem and follows the required request/response contract.
+An API-first detector for five languages (Tamil, English, Hindi, Malayalam, Telugu). It returns a strict label, a confidence score, and a short reason. There is also a small Gradio demo UI.
 
-## Problem We Solve
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
+![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)
+![Transformers](https://img.shields.io/badge/Transformers-FFD21E?style=for-the-badge&logo=huggingface&logoColor=black)
+![Gradio](https://img.shields.io/badge/Gradio-F97316?style=for-the-badge&logo=gradio&logoColor=white)
 
-AI-generated voices are now realistic enough to imitate human speech in scam and impersonation scenarios.  
-SafeWaves helps protect trust by classifying audio as synthetic or real, with a confidence score and explanation.
+[**Live demo (Hugging Face Space)**](https://huggingface.co/spaces/avirenusurya/VoiceDetection)
 
-## Supported Languages
+<img src="docs/screenshot.png" alt="safewaves-voice demo UI" width="640">
 
-The API is designed for these 5 required languages:
+</div>
 
-- Tamil
-- English
-- Hindi
-- Malayalam
-- Telugu
+🏆 Built at the **India AI Impact Buildathon** (GUVI x HCL), where I reached the **Top 2% of 40,000+** participants and my team went on to finish in the Top 20.
 
-## API Contract
+---
 
-Endpoint:
+## What it does
+
+AI voice clones are good enough to impersonate people in scam and fraud calls. safewaves-voice classifies a clip as `AI_GENERATED` or `HUMAN` with a confidence score, so it can sit behind a verification step in a pipeline.
+
+## API
 
 `POST /api/voice-detection`
 
-Headers:
+Headers: `Content-Type: application/json`, `x-api-key: <your_api_key>`
 
-- `Content-Type: application/json`
-- `x-api-key: <your_api_key>`
-
-Request body:
+Request:
 
 ```json
 {
@@ -43,7 +41,7 @@ Request body:
 }
 ```
 
-Success response:
+Response:
 
 ```json
 {
@@ -55,81 +53,48 @@ Success response:
 }
 ```
 
-Error response:
+## How it works
 
-```json
-{
-  "status": "error",
-  "message": "Invalid API key or malformed request"
-}
-```
+1. Audio arrives as Base64 MP3.
+2. The API validates the key, language, and format.
+3. The clip is decoded into a model-ready waveform.
+4. The detector predicts a class and confidence.
+5. Output is normalized to a strict `AI_GENERATED` or `HUMAN` label.
 
-## Simple Flow
+The design favors accuracy over latency, and always returns a confidence and reason so a caller can decide how much to trust the verdict.
 
-1. Input audio arrives as Base64 MP3.
-2. API validates key, language, and format.
-3. Audio is decoded and converted to model-ready waveform.
-4. Deepfake detector predicts class and confidence.
-5. Output is normalized to strict labels: `AI_GENERATED` or `HUMAN`.
-
-## Design Choices
-
-- API-first architecture for automated evaluation.
-- Strict output normalization for contest compliance.
-- Accuracy prioritized over minimal latency.
-- Confidence + explanation returned for transparent decisions.
-
-## Current Limitations
-
-- Very noisy or very short clips can reduce confidence.
-- Heavily compressed/transcoded audio may degrade reliability.
-
-## Model Attribution
-
-This project uses the `Speech-Arena-2025/DF_Arena_1B_V_1` model and local model files derived from DF_Arena.
-
-## Citation
-
-If you use this project or model setup in your work, please cite:
-
-```bibtex
-@misc{kulkarni_2024_df_arena_1b,
-  author       = {Ajinkya Kulkarni and Atharva Kulkarni and Sandipana Dowerah and Matthew Magimai Doss and Tanel Alumäe},
-  title        = {DF_Arena_1B_V_1 - Universal Audio Deepfake Detection},
-  year         = {2025},
-  publisher    = {Hugging Face},
-  url          = {https://huggingface.co/Speech-Arena-2025/DF_Arena_1B_V_1/}
-}
-```
-
-## Local Run
+## Run locally
 
 ```bash
-cd /home/a/Documents/A/Hackathon/guvi-model
-python3 -m venv venv
-source venv/bin/activate
+cd safewaves-voice
+python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
-export MODEL_PATH=./models/DF_Arena
-export PREFERRED_DEVICE=cuda
-export ALLOW_CPU_FALLBACK=0
-export MODEL_DTYPE=float32
-export ENABLE_GRADIO_UI=1
-export API_KEY=YOUR_API_KEY
+
+export API_KEY=your_api_key
+export PREFERRED_DEVICE=cpu        # defaults to cuda on a local machine
 python app.py
 ```
 
 - API docs: `http://localhost:7860/docs`
 - Demo UI: `http://localhost:7860/ui`
 
-## Raw cURL Example
+The model loads from `models/DF_Arena` by default, or set `MODEL_PATH` to point elsewhere.
 
-```bash
-curl -X POST "http://localhost:7860/api/voice-detection" \
-  -H "Content-Type: application/json" \
-  -H "x-api-key: YOUR_API_KEY" \
-  -d '{
-    "language":"English",
-    "audioFormat":"mp3",
-    "audioBase64":"BASE64_ENCODED_MP3"
-  }'
+## Model
+
+This project uses the `Speech-Arena-2025/DF_Arena_1B_V_1` model (wav2vec2 XLS-R with a Conformer-based pipeline) and local files derived from DF_Arena.
+
+```bibtex
+@misc{kulkarni_2024_df_arena_1b,
+  author    = {Ajinkya Kulkarni and Atharva Kulkarni and Sandipana Dowerah and Matthew Magimai Doss and Tanel Alumäe},
+  title     = {DF_Arena_1B_V_1 - Universal Audio Deepfake Detection},
+  year      = {2025},
+  publisher = {Hugging Face},
+  url       = {https://huggingface.co/Speech-Arena-2025/DF_Arena_1B_V_1/}
+}
 ```
+
+## Limitations
+
+- Very short or very noisy clips lower confidence.
+- Heavily compressed or transcoded audio can reduce reliability.
