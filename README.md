@@ -17,7 +17,7 @@ An API-first detector for five languages (Tamil, English, Hindi, Malayalam, Telu
 
 </div>
 
-🏆 Built at the **India AI Impact Buildathon** (GUVI x HCL), where I reached the **Top 2% of 40,000+** participants and my team went on to finish in the Top 20.
+🏆 Built for the **India AI Impact Buildathon** (GUVI x HCL), where I reached the **Top 2% of 40,000+** participants and my team went on to finish in the Top 20.
 
 ---
 
